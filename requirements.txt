@@ -1,4 +1,6 @@
+uvicorn
 fastapi
 pydantic
+orjson==3.6.4
 networkx
 python-louvain
