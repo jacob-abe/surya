@@ -49,7 +49,8 @@ def detect_communities(data: ArticleSimilarities):
 
     if not articleSimilaritiesMap:
         raise HTTPException(status_code=400, detail="No valid data provided")
-
+    print("Detecting communities...")
+    print(articleSimilaritiesMap)
     # Create a graph
     G = nx.Graph()
     for article, similar_articles in articleSimilaritiesMap.items():
