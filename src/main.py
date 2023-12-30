@@ -56,15 +56,16 @@ def detect_communities(data: ArticleSimilarities):
     for article, similar_articles in articleSimilaritiesMap.items():
         for similar in similar_articles:
             G.add_edge(article, similar)
-
+    print("Graph created")
     # Detect communities
     partition = community_louvain.best_partition(G)
-
+    print("partition created")
     # Organize articles into communities
     communities = {}
     for article, community_id in partition.items():
-        communities.setdefault(community_id, []).append(article)
-
+        str_community_id = str(community_id)  # Convert the key to a string
+        communities.setdefault(str_community_id, []).append(article)
+    print("communities created")
     return communities
 
 
