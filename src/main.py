@@ -1,9 +1,34 @@
-from fastapi import FastAPI, HTTPException
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import JSONResponse
+from starlette.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
 import networkx as nx
 import community as community_louvain
 
-app = FastAPI()
+
+class ORJSONResponse(JSONResponse):
+    media_type = "application/json"
+
+    def render(self, content: typing.Any) -> bytes:
+        return orjson.dumps(content, option=orjson.OPT_SERIALIZE_NUMPY)
+
+
+app = FastAPI(
+    default_response_class=ORJSONResponse,
+    redoc_url=None,
+    docs_url="/docs",
+)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_origins=["*"],
+)
 
 
 class ArticleSimilarities(BaseModel):
@@ -41,6 +66,4 @@ def detect_communities(data: ArticleSimilarities):
 
 
 if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="127.0.0.1", port=8000, debug=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=5001, reload=True)
